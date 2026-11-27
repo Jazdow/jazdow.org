@@ -341,9 +341,9 @@
 
             try {
                 const [logo, opp, patronite] = await Promise.all([
-                    loadDataUrl('/stopki/logo.png'),
-                    data.dodaj_baner_opp ? loadDataUrl('/stopki/15-procent.png') : Promise.resolve(''),
-                    data.dodaj_baner_patronite ? loadDataUrl('/stopki/patronite.jpg') : Promise.resolve('')
+                    loadDataUrl('/stopka/logo.png'),
+                    data.dodaj_baner_opp ? loadDataUrl('/stopka/15-procent.png') : Promise.resolve(''),
+                    data.dodaj_baner_patronite ? loadDataUrl('/stopka/patronite.jpg') : Promise.resolve('')
                 ]);
 
                 preview.innerHTML = buildSignature(data, { logo: logo, opp: opp, patronite: patronite });
