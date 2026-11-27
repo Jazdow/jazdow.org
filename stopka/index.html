@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator stopki Gmail - Wolny Jazdów</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus, input[type="tel"]:focus, input[type="email"]:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .submit-btn:disabled {
+            background-color: #9e9e9e;
+            cursor: wait;
+        }
+
+        .result-section {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .preview {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .copy-btn {
+            background-color: #008CBA;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background-color: #007B9A;
+        }
+
+        .back-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        [hidden] { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generator stopki Gmail - Wolny Jazdów</h1>
+
+        <!-- Formularz do wprowadzenia danych -->
+        <form id="signatureForm">
+            <div class="form-group">
+                <label for="imie_nazwisko">Imię i Nazwisko:</label>
+                <input type="text" id="imie_nazwisko" name="imie_nazwisko" required
+                       placeholder="np. Jan Kowalski">
+            </div>
+
+            <div class="form-group">
+                <label for="nr_telefonu">Numer telefonu <span style="color: #999;">(opcjonalnie)</span>:</label>
+                <input type="tel" id="nr_telefonu" name="nr_telefonu"
+                       placeholder="np. +48 123 456 789">
+            </div>
+
+            <div class="form-group">
+                <label for="adres_email">Adres email <span style="color: #999;">(opcjonalnie)</span>:</label>
+                <input type="email" id="adres_email" name="adres_email"
+                       placeholder="np. wolny@jazdow.pl">
+            </div>
+
+            <div class="form-group">
+                <label for="projekt">Projekt <span style="color: #999;">(opcjonalnie)</span>:</label>
+                <input type="text" id="projekt" name="projekt"
+                       placeholder="np. Kulturalne Centrum Samopomocy">
+            </div>
+
+            <div class="form-group">
+                <label for="stanowisko">Stanowisko <span style="color: #999;">(opcjonalnie)</span>:</label>
+                <input type="text" id="stanowisko" name="stanowisko"
+                       placeholder="np. Członek zarządu, Koordynatorka projektu">
+            </div>
+
+            <div class="form-group">
+                <label for="organizacja">Organizacja <span style="color: #999;">(opcjonalnie)</span>:</label>
+                <input type="text" id="organizacja" name="organizacja"
+                       placeholder="np. Związek Stowarzyszeń Wolny Jazdów">
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="dodaj_baner_opp" name="dodaj_baner_opp" style="width: auto; margin: 0;">
+                <label for="dodaj_baner_opp" style="margin: 0; font-weight: normal; cursor: pointer;">Dodaj baner OPP (logo z informacją o 1,5% podatku)</label>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="dodaj_baner_patronite" name="dodaj_baner_patronite" style="width: auto; margin: 0;">
+                <label for="dodaj_baner_patronite" style="margin: 0; font-weight: normal; cursor: pointer;">Dodaj baner Patronite („Dołącz” – zostań Patronem_Patronką)</label>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                Generuj Stopkę HTML
+            </button>
+        </form>
+
+        <!-- Wyniki -->
+        <div id="resultView" hidden>
+            <button type="button" class="back-btn" id="backBtn">← Powrót do formularza</button>
+
+            <div class="result-section">
+                <h2>✅ Stopka została wygenerowana!</h2>
+
+                <h3>📱 Podgląd:</h3>
+                <div class="preview" id="previewContent"></div>
+
+                <div style="margin-bottom: 20px;">
+                    <button type="button" id="copyBtn" class="copy-btn" style="background-color: #4CAF50; margin-right: 10px;">
+                        ✨ Skopiuj Sformatowaną Stopkę
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background-color: #e7f3ff; border-radius: 5px; border-left: 4px solid #2196F3;">
+                    <strong>💡 Instrukcje użycia:</strong><br><br>
+
+                    <strong>🎯 Kopiowanie sformatowanej stopki:</strong><br>
+                    1. Kliknij "✨ Skopiuj Sformatowaną Stopkę"<br>
+                    2. Otwórz program pocztowy (Outlook, Gmail, Thunderbird)<br>
+                    3. Przejdź do ustawień podpisu/stopki<br>
+                    4. Wklej za pomocą Ctrl+V - stopka zostanie wklejona z formatowaniem!<br><br>
+
+                    <strong>📧 Popularne programy pocztowe:</strong><br>
+                    • <strong>Gmail:</strong> Ustawienia → Ogólne → Podpis<br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Odpowiednik PHP htmlspecialchars(..., ENT_QUOTES)
+        function esc(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Wczytuje obrazek i zamienia go na data URL (base64) – tak jak robił to skrypt PHP
+        const imageCache = {};
+        function loadDataUrl(path) {
+            if (!imageCache[path]) {
+                imageCache[path] = fetch(path)
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Nie udało się wczytać ' + path);
+                        return res.blob();
+                    })
+                    .then(function (blob) {
+                        return new Promise(function (resolve, reject) {
+                            const reader = new FileReader();
+                            reader.onload = function () { resolve(reader.result); };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        });
+                    });
+            }
+            return imageCache[path];
+        }
+
+        function buildSignature(data, img) {
+            const linkStyle = 'color: #000000; text-decoration: underline;';
+
+            const patroniteBaner = '<div style="margin: 1em 0;"><a href="https://patronite.pl/jazdow" target="_blank" style="' + linkStyle + '"><img src="' + img.patronite + '" alt="Dołącz - zostań Patronem_Patronką Wolnego Jazdowa na Patronite" width="444" style="width: 100%; max-width: 444px; height: auto; border: none; display: block;"></a></div>';
+
+            const oppBaner = '<div style="margin: 1em 0;"><a href="https://jazdow.pl/opp" target="_blank" style="' + linkStyle + '"><img src="' + img.opp + '" alt="Przekaż 1,5% podatku - OPP" style="max-width: 444px; border: none; display: block;"></a></div>';
+
+            const logo = '\n' +
+'<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; max-width: 555px; width: 100%;">\n' +
+'    <tr>\n' +
+'        <td style="width: 133px; padding: 10px 5px; text-align: center; vertical-align: middle;">\n' +
+'            <a href="https://wolnyjazdow.pl/" target="_blank"><div style="margin: 1em 0;"><img src="' + img.logo + '"\n' +
+'    alt="Wolny Jazdów logo" style="max-width: 128px; border: none; display: block;"></div></a>\n' +
+'        </td>\n' +
+'        \n' +
+'        <td style="width: 400px; padding: 10px 5px; text-align: left; vertical-align: middle;">\n' +
+'            <div style="font-size: x-small; color: #333333;">\n' +
+'                <b>Związek Stowarzyszeń Wolny Jazdów</b><br /><br />\n' +
+'                Jazdów 10/5, 00-467 Warszawa<br />\n' +
+'                e-doręczenia: AE:PL-86024-98343-ERIGG-14<br /><br />\n' +
+'                KRS 0000737179 | NIP 7010827495 | REGON 380558414<br />\n' +
+'                ▲ <a href="mailto:wolny@jazdow.pl" style="' + linkStyle + '">wolny@jazdow.pl</a> ▲ <a href="https://wolnyjazdow.pl" target="_blank" style="' + linkStyle + '">wolnyjazdow.pl</a> ▲ <a href="https://jazdow.pl" target="_blank" style="' + linkStyle + '">jazdow.pl</a>\n' +
+'            </div>\n' +
+'        </td>\n' +
+'    </tr>\n' +
+'</table>\n';
+
+            const badzNaBiezaco = '\n' +
+'<div style="width: 100%; font-size: small; border-top: 3px solid #3d6656;"><br />\n' +
+(data.dodaj_baner_opp ? oppBaner : '\n' +
+'<span style="font-weight: bold;">▲ Zbieramy: </span><a href="https://jazdow.pl/opp" target="_blank" style="' + linkStyle + '">1,5% podatku jako OPP | KRS 0000737179</a><br />') + '\n' +
+'    <span style="font-weight: bold;">▲ Bądź na bieżąco: </span>\n' +
+'            <a href="https://www.facebook.com/jazdow" target="_blank" style="' + linkStyle + '">Facebook</a> |\n' +
+'            <a href="https://www.instagram.com/wolny.jazdow" target="_blank" style="' + linkStyle + '">Instagram</a> |\n' +
+'            <a href="https://linkedin.com/company/jazdow" target="_blank" style="' + linkStyle + '">LinkedIn</a>\n' +
+'        <br />\n' +
+(data.dodaj_baner_patronite ? patroniteBaner : '\n' +
+'    <span style="font-weight: bold;">\n' +
+'        ▲ Dołącz:\n' +
+'    </span>\n' +
+'        <a href="https://patronite.pl/jazdow" target="_blank" style="' + linkStyle + '">zostań Patronem_Patronką</a>\n' +
+'    <br />\n' +
+'    <br />') + '\n' +
+'    <span style="font-size: small;">#ZawszeBędzieJazdów</span>\n' +
+'</div>';
+
+            const imie = esc(data.imie_nazwisko);
+            const tel = esc(data.nr_telefonu);
+            const email = esc(data.adres_email);
+            const projekt = esc(data.projekt);
+            const stanowisko = esc(data.stanowisko);
+            const organizacja = esc(data.organizacja);
+
+            const imieHtml = '<div style="margin-bottom: 2px; font-size: small; font-weight: bold;">' + imie + '</div>';
+            const telHtml = tel ? '<div style="font-size: small;">' + tel + '</div>' : '';
+            const emailHtml = email ? '<div style="font-size: small;"><a href="mailto:' + email + '" style="' + linkStyle + '">' + email + '</a></div>' : '';
+            const projektHtml = projekt ? '<div style="font-size: small;">' + projekt + '</div>' : '';
+            const stanowiskoHtml = stanowisko ? '<div style="font-size: small;">' + stanowisko + '</div>' : '';
+            const organizacjaHtml = organizacja ? '<div style="font-size: small;">' + organizacja + '</div>' : '';
+
+            return '\n' +
+'<div style="color: #000000; font-family: Arial, Helvetica, sans-serif; max-width: 444px;">\n' +
+'    ' + imieHtml + '\n' +
+'    ' + telHtml + '\n' +
+'    ' + emailHtml + '\n' +
+'    <br />\n' +
+'    ' + projektHtml + '\n' +
+'    ' + stanowiskoHtml + '\n' +
+'    ' + organizacjaHtml + '\n' +
+'    <br />\n' +
+'    ' + badzNaBiezaco + '\n' +
+'    ' + logo + '\n' +
+'</div>';
+        }
+
+        const form = document.getElementById('signatureForm');
+        const resultView = document.getElementById('resultView');
+        const preview = document.getElementById('previewContent');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+
+            const data = {
+                imie_nazwisko: form.imie_nazwisko.value.trim(),
+                nr_telefonu: form.nr_telefonu.value.trim(),
+                adres_email: form.adres_email.value.trim(),
+                projekt: form.projekt.value.trim(),
+                stanowisko: form.stanowisko.value.trim(),
+                organizacja: form.organizacja.value.trim(),
+                dodaj_baner_opp: form.dodaj_baner_opp.checked,
+                dodaj_baner_patronite: form.dodaj_baner_patronite.checked
+            };
+
+            try {
+                const [logo, opp, patronite] = await Promise.all([
+                    loadDataUrl('/stopki/logo.png'),
+                    data.dodaj_baner_opp ? loadDataUrl('/stopki/15-procent.png') : Promise.resolve(''),
+                    data.dodaj_baner_patronite ? loadDataUrl('/stopki/patronite.jpg') : Promise.resolve('')
+                ]);
+
+                preview.innerHTML = buildSignature(data, { logo: logo, opp: opp, patronite: patronite });
+                form.hidden = true;
+                resultView.hidden = false;
+                window.scrollTo(0, 0);
+            } catch (err) {
+                alert('❌ Błąd podczas generowania stopki: ' + err.message);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        document.getElementById('backBtn').addEventListener('click', function () {
+            resultView.hidden = true;
+            form.hidden = false;
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', copyFormattedSignature);
+
+        // Kopiowanie sformatowanej stopki (gotowej do wklejenia w programie pocztowym)
+        function copyFormattedSignature() {
+            if (navigator.clipboard && window.ClipboardItem) {
+                const clipboardItem = new ClipboardItem({
+                    'text/html': new Blob([preview.innerHTML], { type: 'text/html' }),
+                    'text/plain': new Blob([preview.innerText], { type: 'text/plain' })
+                });
+
+                navigator.clipboard.write([clipboardItem]).then(function () {
+                    alert('✅ Sformatowana stopka została skopiowana! Możesz ją teraz wkleić do programu pocztowego (Ctrl+V).');
+                }).catch(function () {
+                    copyWithSelection();
+                });
+            } else {
+                copyWithSelection();
+            }
+        }
+
+        // Alternatywna metoda kopiowania przez zaznaczenie
+        function copyWithSelection() {
+            const selection = window.getSelection();
+            const range = document.createRange();
+            range.selectNodeContents(preview);
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                if (document.execCommand('copy')) {
+                    alert('✅ Stopka została zaznaczona i skopiowana! Możesz ją wkleić do programu pocztowego.');
+                } else {
+                    alert('⚠️ Automatyczne kopiowanie nie powiodło się. Zaznacz stopkę ręcznie i naciśnij Ctrl+C.');
+                }
+            } catch (err) {
+                alert('⚠️ Zaznacz stopkę ręcznie i skopiuj za pomocą Ctrl+C.');
+            }
+
+            selection.removeAllRanges();
+        }
+    </script>
+</body>
+</html>
